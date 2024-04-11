@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .textcolor{
+            color:blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        {{msg}}
+        <h2>{{web.title}}</h2>
+        <h2>{{web.url}}</h2>
+        <h2>{{web.number}}</h2>
+        <button v-on:click="edit">修改</button><hr>
+        <button @click="edit">修改简写</button>
+        <br>回车 <input type="text" @keyup.enter="add(40,50)">
+        <br>空格 <input type="text" @keyup.space="add(1,0)">
+        <br>tab <input type="text" @keydown.tab="add(2,0)">
+        <br>w <input type="text" @keyup.w="add(3,0)">
+
+        <br>ctrl + enter <input type="text" @keyup.ctrl.enter="add(10,0)">
+        <br>ctrl + a <input type="text" @keyup.ctrl.a="add(20,0)">
+
+        <button @click="toggle">切换显示状态</button>
+        <p>{{web.show}}</p>
+        <p v-show="web.show">Muzi哈哈哈</p>
+        <p v-if="web.show">rkworklllll</p>
+
+        <p v-if="web.number < 100">新网站</p>
+        <p v-else-if="web.number >= 100 && web.number<1000">优秀网站</p>
+        <p v-else>资深网站</p>
+
+        <!--动态属性绑定-->
+        <h3>v-bind:value="web.url"</h3>
+        <input type="text" v-bind:value="web.url">
+    
+        <h3>文本框内容:value="web.url"</h3>
+        <input type="text" :value="web.url"><hr>
+
+        <h3>图片显示:src="web.img"</h3>
+        <img :src="web.img" width="500px">
+        <!--绑定属性-->
+
+        <h3>绑定属性</h3>
+        <b :class="{textcolor:web.fontstatus}">木子哈哈哈</b>
+        <hr>
+        <ul>
+            <p >数组<span style="color: red;">value index</span> 访问</p>
+            <li v-for= '(value,index) in data.number'>
+                 {{index}}:{{value}}
+            </li>
+
+            <p >对象<span style="color: red;">value key index</span> 访问</p>
+            <li v-for= '(value,key,index) in data.user'>
+                {{index}}:{{key}}:{{value}}
+           </li>
+
+           <p >对象中多个数组<span style="color: red;">value.id value.name value.web</span> 访问</p>
+           <li v-for= '(value,index) in data.teacher' :title="value.name" :key="value.id">
+               {{index}}:{{value.id}}:{{value.name}}:{{value.web}}
+          </li>
+
+        </ul>
+        <ul>
+
+            <p >数组<span style="color: red;">value key</span> 访问</p>
+            <template v-for= '(value,key,index) in data.user'>
+                <li v-if="index==1">
+                {{index}}:{{key}}:{{value}}
+                </li>
+            </template>
+        </ul>
+
+        <hr>
+        <div style="color:blue ;border: solid 1px ;width: 300px"  >
+            <h3>文本框:{{data.text}}</h3>
+            <h3>单选框:{{data.radio}}</h3>
+            <h3>复选框:{{data.checkbox}}</h3>
+            <h3>记住密码:{{data.remeber}}</h3>
+            <h3>下拉框: {{data.select}}</h3>
+
+            单项数据绑定 <input type="text" :value="data.text"><br>
+            双向数据绑定 <input type="text" v-model="data.text">
+            <hr>
+            <p>单选框</p>
+            <input type="radio" v-model="data.radio" value="1">写作
+            <input type="radio" v-model="data.radio" value="2">画画
+            <p>复选框</p>            
+            <input type="checkbox" v-model="data.checkbox" value="a">写作
+            <input type="checkbox" v-model="data.checkbox" value="b">画画
+            <input type="checkbox" v-model="data.checkbox" value="c">唱歌
+            <p>记住密码</p>
+            <input type="checkbox" v-model="data.remeber">记住密码
+            <p>下拉框</p>
+            <select v-model="data.select">
+                <option value="">请选择</option>
+                <option value="A">写作</option>
+                <option value="B">画画</option>
+                <option value="C">运动</option>
+
+            </select>
+            <hr>
+            <p style="color:royalblue"> v-model修饰符</p>
+            {{web.number}}
+            <p>实时渲染</p><input type="text" v-model.lazy="web.number">
+            <p>输入框的值转为number</p><input type="text" v-model.lazy="web.number">
+            <p>去除首尾空格</p>
+            {{web.url}}<input type="text" v-model.trim="web.url">   
+
+            <p>v-text v-html 解析文本的方式不同// v-text == {{}}</p>
+            <p v-text="web.url"></p>
+            <p v-html="web.url2"></p>
+            <p>add: {{add2()}}</p>
+            <p>add: {{add2()}}</p>
+            <p>sub属性而不是方法</p>
+            <p>sub: {{sub}}</p>
+            <p>sub: {{sub}}</p>
+            <p>计算属性有缓存</p>
+            x<input type="text" v-model.number="data.x"><br>
+            y<input type="text" v-model.number="data.y">
+            <hr>
+            <select v-model="data.hoby">
+                <option value="">请选择</option>
+                <option value="1">写作</option>
+                <option value="2">画画</option>
+                <option value="3">种树</option>
+            </select>
+            <select v-model="data.year">
+                <option value="">请选择</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+            </select>
+            <select v-model="data.month">    <!--默认值必须在option中存在才会显示出来-->
+                <option value="4">请选择</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>   <!--为什么我每次选一下他就会调用以下add2??/-->
+            </select>
+
+        </div>
+
+    </div>    
+    <script type="module">
+        import {createApp, reactive, ref,computed,watch} from './js/vue.esm-browser.js'
+        createApp({
+            setup(){
+                const number = ref(10)
+                const web  = reactive({
+                    title:'木子hhh',
+                    url:'muzi_hhh.com',
+                    url2:'<h1 style="color:red">hhh</h1>',
+                    number:0,
+                    show:false,
+                    img:"./1.jpg",
+                    fontstatus: true
+                })
+                const edit =() => {
+                    web.url = "www.rkwork.com"
+                }
+                const add = (a,b) => {
+                    web.number += a + b 
+                }
+
+                const toggle= () => {
+                    web.show = !web.show
+                }
+
+                const data = reactive({
+                    number: ['十一','十二','十三'],
+                    user:{
+                        name:'muzi',
+                        gender:'男'
+                    },
+                    teacher:[
+                        {id: 100 ,name:'zhangsan',web:'muzihhh.com'},
+                        {id: 110 ,name:'lisi',web:'www.muzihhh.com'}
+
+                    ],
+                    year:"2024",
+                    month:'6',
+                    hoby:'',
+
+                    text:'muzihhhh.com',
+                    radio:'',
+                    checkbox:[],
+                    remeber:false,
+                    select:'',
+                    x:10,
+                    y:20
+                })
+                let add2 = () =>{
+                    console.log("add")
+                    return data.x + data.y 
+                }
+                const sub = computed( ()=>{
+                    console.log('减法')
+                    return data.x -data.y
+                }) 
+            
+            watch(data, (newvalue, oldvalue)=>{
+                console.log(newvalue,"  ", oldvalue)
+            })
+            
+            return{
+                msg:'success',
+                number,
+                web,
+                edit,
+                add,
+                toggle,
+                data,
+                add2,
+                sub,
+
+            }
+            }
+        }).mount("#app")
+
+    </script>
+</body>
+</html>
+<!--自动监听和手动监听需要设置ref 或者 reactive 然后自动监听代码没敲，'简单地'回顾下vue3-->
+<!--还有就是vue控制交互 行为，bootstrap只是展示网站的页面-->

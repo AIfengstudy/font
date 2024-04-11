@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车demo</title>
+
+    <style>
+        table {
+            width: 600px;
+            color: #8f8e8e;
+            text-align: center;
+            border-collapse: collapse;
+        }
+        table thead{
+            background:#F5F5F5;
+        }
+
+        table tr {
+            height: 30px;
+            line-height: 30px;
+            border: 1px solid #ececec;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+
+        <table>
+            <thead>
+                <tr>
+                    <td><input type="checkbox" v-model="data.selected"/></td>  <!--v-model -->
+                    <td>商品</td>   
+                    <td>单价</td>
+                    <td>库存</td>
+                    <td colspan='2'>操作</td>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <tr v-for="(value, index ) in data.list">
+                    <td><input type="checkbox" v-model="data.checkboxList" :value="value" /></td>  <!--data.checkboxList是否为空，值只有两个 false or true-->
+                    <td>{{value.name}}</td>
+                    <td>{{value.price}}</td>
+                    <td>{{value.stock}}</td>
+                    <td><button @click="sub(value)">-</button>{{value.number}}<button @click="add(value)">+</button></td>
+                    <td><button @click="del(index, value.id)">删除</button></td>
+
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>总价:{{totalPrice}}</td>
+                    
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+
+    <script type="module">
+        import {createApp, reactive, watch, computed} from './js/vue.esm-browser.js'
+        createApp({
+            setup(){
+
+                const data =reactive({
+                    selected: false,
+                    checkboxList: [],
+                    list: [{
+                        id:1,
+                        name:'铅笔',
+                        price: 10,
+                        number: 1,
+                        stock: 3
+                    },
+
+                    {
+                        id:2,
+                        name:'鼠标',
+                        price: 20,
+                        number: 2,
+                        stock: 5
+                    },
+                    {
+                        id:3,
+                        name:'键盘',
+                        price: 30,
+                        number: 1,
+                        stock: 6
+                    }
+                 ]
+                })
+
+                // const selectAll = () =>{
+                //     console.log(data.selected)
+                //     if (data.selected){
+                //         data.checkboxList = data.list
+                //     }else{
+                //         data.checkboxList = []
+                //     }
+                //     console.log(data.checkboxList)
+                // }
+
+                // const checkSelect = () =>{
+                //     if(data.checkboxList.length == data.list.length && data.list.length != 0){     //复选框和清单一致则全选， 当清单为空 也不能全选
+                //         data.selected = true
+                //     }else{
+                //         data.selected = false
+                //     }
+                // }
+
+                /* 修改为计算属性
+                const totalPrice = () =>{
+                    let total = 0
+                    for (let i = 0; i < data.checkboxList.length; i ++){
+                        total += data.checkboxList[i].price * data.checkboxList[i].number
+                    }
+                    return total
+                }
+                */
+               const totalPrice = computed(() => {
+                    return data.checkboxList.reduce((total,item) => total + item.price* item.number, 0)  //黄色括号里面的两个参数从哪里来？
+               })
+
+                const sub = (value) =>{
+
+                    value.number--
+                    if(value.number <= 0){
+                        value.number = 0
+                    }
+                }
+                const add = (value) =>{
+                    value.number++
+                    if(value.number >= value.stock){
+                        value.number = value.stock
+                    }
+                }
+                const del = (index, id) =>{
+                    data.list.splice(index, 1)           
+                    let newArr = data.checkboxList.filter((value, index)=>{
+                        return value.id != id
+                    })       // 就是说 我用 filter函数通过 checkboxList 创建一个新的数组，条件是id不等于传入的id  ;在这犯了个小错，filter的参数 默认为value & index
+
+                    data.checkboxList = newArr
+                    // checkSelect()
+                }
+
+                let flag = true
+                watch(()=>data.selected, (newvalue, oldvalue)=>{
+                    // console.log("newvalue:" ,newvalue, "oldvalue:",oldvalue)
+                    if (newvalue){
+                        data.checkboxList = data.list
+                    }else{
+                        if (flag){
+                            data.checkboxList = []
+                        }
+                    }
+                })
+
+                watch(()=>data.checkboxList, (newvalue, oldvalue)=>{
+
+                    if(newvalue.length == data.list.length && data.list.length != 0){     //复选框和清单一致则全选， 当清单为空 也不能全选
+                        data.selected = true
+                        flag = true
+                    }else{
+                        data.selected = false
+                        flag = false
+                    }
+
+                })
+
+                return{
+                    data,
+                    //selectAll,
+                    //checkSelect,
+                    totalPrice,
+                    sub,
+                    add,
+                    del
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
+<!--
+
+    哎，有问题欸，我删除到倒数第二个全选状态没有了....
+
+-->
